@@ -1,0 +1,8 @@
+.venv
+consumer
+test_kafka_nifi_communication/output
+zeppelin
+tmp
+nifi
+nifi_registry
+atlas_data
