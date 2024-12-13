@@ -37,7 +37,6 @@ docker exec -it kafka_container kafka-topics --list --bootstrap-server kafka:909
 ```
 
 
-
 ## Test Nifi-Kafka communication
 
 To test Nifi-kafka communication follow these steps:
