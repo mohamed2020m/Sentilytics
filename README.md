@@ -27,27 +27,17 @@ Verify `kafka-nifi-dst` topic creation
 make list_kafka_topic
 ```
 
+**Note:** YOU HAVE TO UPDATE KAFKA PROCESSOR IN NIFI TO USE YOU'RE IP LOCAL. 
+
+For more info check our article.
+
 ## Nifi & Atlas configuration
 
-
-1. export your IP private as a variable;
-
-```powershell
-$IP = (Get-NetIPAddress -InterfaceAlias "Ethernet" | Where-Object { $_.AddressFamily -eq 'IPv4' }).IPAddress
-```
-
-using bash
-
-```
-export IP=$(ipconfig getifaddr en0)
-```
-
-this for nifi with atlas
+Add nifi-atlas NAR to nifi container
 
 ```bash
-docker cp ./lib/nifi-atlas-nar-1.19.0.nar nifi_container_persistent:/opt/nifi/nifi-1.19.1/lib
+make add_atlas_to_nifi
 ```
-
 
 ## Test Nifi-Kafka communication
 
