@@ -1,6 +1,33 @@
 
 # Sentilytics
 
+TODO: 
+
+DESCRIPTION
+
+
+![project_piepline](./assets/images/project_piepline.png)
+
+
+## Installation
+
+TODO:
+
+## Nifi & Kafka configuration
+
+Create new topic `kafka-nifi-dst` using the following command:
+
+```bash
+make create_kafka_topic
+```
+
+Verify `kafka-nifi-dst` topic creation
+
+```bash
+make list_kafka_topic
+```
+
+## Nifi & Atlas configuration
 
 
 1. export your IP private as a variable;
@@ -19,21 +46,6 @@ this for nifi with atlas
 
 ```bash
 docker cp ./lib/nifi-atlas-nar-1.19.0.nar nifi_container_persistent:/opt/nifi/nifi-1.19.1/lib
-```
-
-
-create a topic
-
-```bash
-docker exec -it kafka_container kafka-topics --create --topic kafka-nifi-dst --bootstrap-server kafka:9093 --partitions 1 --replication-factor 1
-
-```
-
-list 
-
-```bash
-docker exec -it kafka_container kafka-topics --list --bootstrap-server kafka:9093
-
 ```
 
 
