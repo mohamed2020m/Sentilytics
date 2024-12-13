@@ -44,7 +44,7 @@ To test Nifi-kafka communication follow these steps:
 
 2. run the following command:
 ```bash
-docker cp ./f914bab7-d46d-4c1d-b2c1-aa8c699958ef  nifi_container_persistent:/opt/nifi/test.json
+make conf_test
 ```
 This will copy the dummy json file `f914bab7-d46d-4c1d-b2c1-aa8c699958e` to the `nifi_container_persistent` container
 
