@@ -66,3 +66,41 @@ like this:
 
 8. Finnaly, verify you're terminal you will see something like this:
 ![kafka_consumer_response](./assets/images/kafka_consumer_response.png)
+
+
+## Real-time Visualization using Streamlit
+
+### Pre-installation
+
+```bash
+pip install -r requirements.txt
+```
+### Set-up
+
+Create a file called .env and fill in the following content
+```bash
+HOST=localhost
+PORT=10000
+USER=hive
+PASSWORD=votre_mot_de_passe
+DATABASE=Hive_database
+```
+
+### Stream the complex visualization
+To perform streaming processing on the dashboard, you need to deploy all the settings mentioned above, as well as ensure that the entire pipeline is functioning correctly and all its components are in place.
+
+### Run 
+To start the visualization of historical data and real-time predictions, run the following command:
+
+```bash
+streamlit run app.py --server.port 8502
+```
+
+
+
+
+
+
+
+
+
