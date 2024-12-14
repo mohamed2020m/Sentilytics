@@ -82,7 +82,7 @@ Create a file called .env and fill in the following content
 HOST=localhost
 PORT=10000
 USER=hive
-PASSWORD=votre_mot_de_passe
+PASSWORD=your_password
 DATABASE=Hive_database
 ```
 
