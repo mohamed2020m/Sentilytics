@@ -66,3 +66,69 @@ like this:
 
 8. Finnaly, verify you're terminal you will see something like this:
 ![kafka_consumer_response](./assets/images/kafka_consumer_response.png)
+
+
+
+## Model Training
+
+
+1. Make sure that the Zipline service is running and exposed on port 8085. You can check this by verifying the container where Zipline is deployed.
+2. To open the Zipline web interface, enter the following URL in the browser's address bar :
+```bash
+http://localhost:8085/ 
+```
+3. Import the SentimentAnalysis notebook located in the `models` folder.
+4. Run the SentimentAnalysis notebook to explore the different steps we used for selecting the best classification model to use.
+5. We use MLflow for tracking our machine learning models, which helps us compare different versions and evaluate their performance. MLflow enables us to track experiments by recording metrics, parameters, and output files for each run.
+
+   To access the MLflow web UI and compare different metrics, use the following command:
+```bash
+mlflow ui -p 1234
+```
+
+
+
+
+
+
+
+
+
+
+
+## Real-time Visualization using Streamlit
+
+### Pre-installation
+
+```bash
+pip install -r requirements.txt
+```
+### Set-up
+
+Create a file called .env and fill in the following content
+```bash
+HOST=localhost
+PORT=10000
+USER=hive
+PASSWORD=your_password
+DATABASE=Hive_database
+```
+
+### Stream the complex visualization
+To perform streaming processing on the dashboard, you need to deploy all the settings mentioned above, as well as ensure that the entire pipeline is functioning correctly and all its components are in place.
+
+### Run 
+To start the visualization of historical data and real-time predictions, run the following command:
+
+```bash
+streamlit run app.py --server.port 8502
+```
+
+
+
+
+
+
+
+
+
