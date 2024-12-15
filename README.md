@@ -178,6 +178,9 @@ To start the visualization of historical data and real-time predictions, run the
 streamlit run app.py --server.port 8502
 ```
 
+## Video Demo
+
+Click [here](https://drive.google.com/file/d/13sxlESQgW1Z_gMACT10qyb2f2WIebrEa/view?usp=drive_link) to watch the video demo on Google Drive.
 
 
 
