@@ -1,34 +1,99 @@
-import time
+from datetime import timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
+from airflow.operators.bash import BashOperator
+from datetime import datetime
+import pandas as pd
 from pymongo import MongoClient
-from datetime import timedelta
+from pyhive import TextBlob
+from pyhive import hive
 
+# Définition des fonctions utilisées
+def get_data_from_mongo(**kwargs):
+    try:
+        mongo_client = MongoClient('mongodb://root:root@mongo:27017')
+        mongo_db = mongo_client['comments_db']
+        mongo_collection = mongo_db['comments']
+        data = list(mongo_collection.find().limit(100))
 
-# Define MongoDB connection and fetch the first 100 documents
-def check_documents():
-    client = MongoClient("mongodb://localhost:27017")
-    db = client["sentilytics_db"]
-    collection = db["sentilytics_collection"]
-    # Fetch first 100 documents
-    documents = list(collection.find().limit(100))
-    if not documents:
-        raise ValueError("No documents left to process in MongoDB.")
-    return documents
-    
-# Function to remove the first 100 documents after processing
-def remove_documents(documents):
-    client = MongoClient("mongodb://localhost:27017")
-    db = client["sentilytics_db"]
-    collection = db["sentilytics_collection"]
-    # Get the _id of documents to delete
-    ids_to_delete = [doc['_id'] for doc in documents]
+        df = pd.DataFrame(data)
+        kwargs['ti'].xcom_push(key='dataframe', value=df)
+        return "Data fetched from MongoDB"
+    except Exception as e:
+        print("Erreur lors de la connexion à MongoDB ou de la récupération des données :", e)
+        raise e
+
+def get_sentiment_and_save_csv(**kwargs):
+    ti = kwargs['ti']
+    df = ti.xcom_pull(key='dataframe', task_ids='fetch_data')
+    if df is not None and not df.empty:
+        df["Sentiment_Pred"] = df["textOriginal"].apply(get_sentiment)
+        df.to_csv("output_with_sentiment.csv", index=False)
+        ti.xcom_push(key='processed_df', value=df)
+        return "Sentiment predicted and CSV saved"
+    else:
+        print("Aucune donnée disponible pour le traitement.")
+        raise ValueError("No data available for processing")
+
+def get_sentiment(text):
+    if pd.notnull(text):
+        blob = TextBlob(text)
+        polarity = blob.sentiment.polarity
+        if polarity > 0:
+            return "positive"
+        elif polarity < 0:
+            return "negative"
+        else:
+            return "neutral"
+    else:
+        return "neutral"
+
+def save_to_hive(**kwargs):
+    ti = kwargs['ti']
+    df = ti.xcom_pull(key='processed_df', task_ids='process_sentiment')
+    try:
+        connection = hive.connect(
+            host='hive',
+            port=9083,
+            username='hive',
+            auth='NOSASL')
+        cursor = connection.cursor()
+
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS comments_sentiment (
+            source STRING,
+            textOriginal STRING,
+            likeCount INT,
+            publishedAt DATE,
+            channel STRING,
+            prediction STRING
+        )
+        STORED AS PARQUET
+        """
+        cursor.execute(create_table_query)
+
+        parquet_file = "output_with_sentiment.parquet"
+        df.to_parquet(parquet_file, index=False)
+
+        load_data_query = f"LOAD DATA LOCAL INPATH '{parquet_file}' INTO TABLE comments_sentiment"
+        cursor.execute(load_data_query)
+        return "Data saved to Hive"
+    except Exception as e:
+        print("Erreur lors de l'enregistrement dans Hive :", e)
+        raise e
+
+def remove_data_from_mongo(**kwargs):
+    ti = kwargs['ti']
+    df = ti.xcom_pull(key='processed_df', task_ids='process_sentiment')
+    client = MongoClient("mongodb://root:root@mongo:27017")
+    db = client["comments_db"]
+    collection = db["comments"]
+    ids_to_delete = df['_id'].tolist()
     collection.delete_many({'_id': {'$in': ids_to_delete}})
-    print(f"Removed {len(ids_to_delete)} documents from MongoDB.")
-    
-        
+    return "Data removed from MongoDB"  
+
+
 # DAG Definition
 default_args = {
     'owner': 'airflow',
@@ -37,31 +102,41 @@ default_args = {
 }
 
 with DAG(
-    'sentilytics_pipeline',
+    'mongo_inference_pipeline',
     default_args=default_args,
-    description='Pipeline to process and visualize sentilytics pipeline',
+    description='Pipeline to process and visualize MongoDB data every 30 seconds',
     schedule_interval=timedelta(seconds=10),
     catchup=False,
 ) as dag:
 
-    # Task 1: Verify Documents in MongoDB
-    verify_documents = PythonOperator(
-        task_id='verify_documents',
-        python_callable=check_documents
+    # Task 1: Récupération des données de MongoDB
+    fetch_data = PythonOperator(
+        task_id='fetch_data',
+        python_callable=get_data_from_mongo,
+        provide_context=True
     )
 
-    # Task 2: Inference and Store in Hive
-    inference_store = BashOperator(
-        task_id='inference_store',
-        bash_command='python ../inference/inference_script.py'
+    # Task 2: Analyse des sentiments et sauvegarde en CSV
+    process_sentiment = PythonOperator(
+        task_id='process_sentiment',
+        python_callable=get_sentiment_and_save_csv,
+        provide_context=True
     )
 
-    # Task 3: Remove Processed Documents
-    remove_processed_documents = PythonOperator(
-        task_id='remove_processed_documents',
-        python_callable=remove_documents,
-        op_kwargs={'documents': '{{ task_instance.xcom_pull(task_ids="verify_documents") }}'}
+    # Task 3: Sauvegarde des données dans Hive
+    save_hive = PythonOperator(
+        task_id='save_to_hive',
+        python_callable=save_to_hive,
+        provide_context=True
     )
-    
+
+    # Task 5: Suppression des données traitées dans MongoDB
+    cleanup_mongo = PythonOperator(
+        task_id='cleanup_mongo',
+        python_callable=remove_data_from_mongo,
+        provide_context=True
+    )
+
     # Task dependencies
-    verify_documents >> inference_store >> remove_processed_documents
+    fetch_data >> process_sentiment >> save_hive >> cleanup_mongo
+    

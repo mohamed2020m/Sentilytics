@@ -67,6 +67,10 @@ git clone https://github.com/mohamed2020m/Sentilytics
 make start
 ```
 
+## Get Your keys
+
+Please follow the detailed instructions in our report on how to obtain API keys from Google Cloud and The New York Times.
+
 ## Nifi & Kafka configuration
 
 Create new topic `kafka-nifi-dst` using the following command:
