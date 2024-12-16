@@ -21,7 +21,7 @@
 
 ![project_piepline](./assets/images/project_piepline.png)
 
-## DESCRIPTION
+## 📄 DESCRIPTION
 
 This project focuses on designing and implementing a comprehensive big data pipeline that adheres to the principles of Lambda Architecture, ensuring real-time and batch processing capabilities while maintaining robust data governance and metadata management using Apache Atlas.  
 
@@ -80,7 +80,7 @@ git clone https://github.com/mohamed2020m/Sentilytics
 make start
 ```
 
-## Model Training
+## 🤖Model Training
 
 1. Make sure that the Zipline service is running and exposed on port 8085. You can check this by verifying the container where Zipline is deployed.
 2. To open the Zipline web interface, enter the following URL in the browser's address bar :
@@ -96,7 +96,7 @@ http://localhost:8085/
 mlflow ui -p 1234
 ```
 
-## Get Your keys
+## 🔑 Get Your keys
 
 Please follow the detailed instructions in our report on how to obtain API keys from Google Cloud and The New York Times.
 
@@ -118,7 +118,7 @@ make list_kafka_topic
 
 For more info check our article.
 
-## Nifi & Atlas configuration
+## ⚙️ Nifi & Atlas configuration
 
 Add nifi-atlas NAR to nifi container
 
@@ -160,7 +160,7 @@ like this:
 ![kafka_consumer_response](./assets/images/kafka_consumer_response.png)
 
 
-## Data processing with sprak streaming
+## ⚙️ Data processing with sprak streaming
 
 The steps :
 - Step 1: Raw data consumption from kafka from apache Nifi
@@ -187,7 +187,7 @@ spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5 --jars 
 ```
 This stream_consumer file uses the utils file which contains the different processing functions
 
-## Airflow
+## Orchestration with Airflow
 We used airflow to orchestrate the following part of our pipeline:
 
 <p align="center">
@@ -230,7 +230,7 @@ PASSWORD=your_password
 DATABASE=Hive_database
 ```
 
-### Stream the complex visualization
+### 📊 Stream the complex visualization
 To perform streaming processing on the dashboard, you need to deploy all the settings mentioned above, as well as ensure that the entire pipeline is functioning correctly and all its components are in place.
 
 ### Run 
@@ -240,13 +240,14 @@ To start the visualization of historical data and real-time predictions, run the
 streamlit run app.py --server.port 8502
 ```
 
-## Video Demo
+## 🎥 Video Demo
 
-<a href="https://drive.google.com/file/d/13sxlESQgW1Z_gMACT10qyb2f2WIebrEa/view?usp=drive_link" target="_blank">
-   <p align="center">
+Watch our video demo here 👇
+<p align="center">
+   <a href="https://drive.google.com/file/d/13sxlESQgW1Z_gMACT10qyb2f2WIebrEa/view?usp=drive_link" target="_blank">
       <img src="./assets/images/play_demo.gif" alt="thumbnail" style="border:1px solid gray" width="400" height="300">
-   </p>
-</a>
+   </a>
+</p>
 
 
 ## Apache Atlas
