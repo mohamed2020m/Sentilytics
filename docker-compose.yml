@@ -285,8 +285,6 @@ services:
     volumes:
     - historyserver:/hadoop/yarn/timeline
 
-
-
   # hive
   hive-server:
     image: bde2020/hive:2.3.2-postgresql-metastore
@@ -310,8 +308,6 @@ services:
 
   hive-metastore-postgresql:
     image: bde2020/hive-metastore-postgresql:2.3.0
-
-
 
   # spark
   spark-master:
@@ -360,7 +356,6 @@ services:
     - spark-master
     
   # zookeeper
-
   zookeeper:
     hostname: myzookeeper
     container_name: zookeeper_nifi
@@ -377,27 +372,6 @@ services:
       retries: 20
     networks:
       - sentiment_analysis_network
-
-
-  #
-
-  # 
-  # zookeeper:
-  #   hostname: myzookeeper
-  #   container_name: zookeeper_nifi
-  #   image: confluentinc/cp-zookeeper:7.4.0
-  #   ports:
-  #     - "2181:2181"
-  #   environment:
-  #     ZOOKEEPER_CLIENT_PORT: 2181
-  #     ZOOKEEPER_TICK_TIME: 2000
-  #   healthcheck:
-  #     test: ["CMD", "echo", "ruok", "|", "nc", "localhost", "2181"]
-  #     interval: 20s
-  #     timeout: 20s
-  #     retries: 20
-  #   networks:
-  #     - sentiment_analysis_network
 
   # kafka
   kafka:

@@ -1,6 +1,19 @@
 
 # Sentilytics : 
 
+![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)
+![Zeppelin 0.10.0](https://img.shields.io/badge/Zeppelin-0.10.0-orange.svg)
+![Spark 3.x](https://img.shields.io/badge/Spark-3.x-brightgreen.svg)
+![NiFi 1.19.1](https://img.shields.io/badge/NiFi-1.19.1-yellow.svg)
+![Apache Atlas 2.0.0](https://img.shields.io/badge/Apache%20Atlas-2.0.0-blue.svg)
+![Apache Airflow 2.9.3](https://img.shields.io/badge/Apache%20Airflow-2.9.3-lightblue.svg)
+![Apache Kafka 7.3.2](https://img.shields.io/badge/Apache%20Kafka-7.3.2-brightgreen.svg)
+![Apache ZooKeeper 7.4.0](https://img.shields.io/badge/Apache%20ZooKeeper-7.4.0-orange.svg)
+![Hive 2.3.0](https://img.shields.io/badge/Hive-2.3.0-darkgreen.svg)
+![Mongo 8.0](https://img.shields.io/badge/MongoDB-8.0-green.svg)
+
+
+
 **Data Governance and Metadata Management in a Data Pipeline Using Apache Atlas within a Lambda Architecture**
 
 
@@ -67,6 +80,22 @@ git clone https://github.com/mohamed2020m/Sentilytics
 make start
 ```
 
+## Model Training
+
+1. Make sure that the Zipline service is running and exposed on port 8085. You can check this by verifying the container where Zipline is deployed.
+2. To open the Zipline web interface, enter the following URL in the browser's address bar :
+```bash
+http://localhost:8085/ 
+```
+3. Import the SentimentAnalysis notebook located in the `models` folder.
+4. Run the SentimentAnalysis notebook to explore the different steps we used for selecting the best classification model to use.
+5. We use MLflow for tracking our machine learning models, which helps us compare different versions and evaluate their performance. MLflow enables us to track experiments by recording metrics, parameters, and output files for each run.
+
+   To access the MLflow web UI and compare different metrics, use the following command:
+```bash
+mlflow ui -p 1234
+```
+
 ## Get Your keys
 
 Please follow the detailed instructions in our report on how to obtain API keys from Google Cloud and The New York Times.
@@ -112,11 +141,16 @@ This will copy the dummy json file `f914bab7-d46d-4c1d-b2c1-aa8c699958e` to the 
 
 4. Add a new proccessor `GetFile` and configurate like this:
 
-![GetFile_Processor_Configuration](./assets/images/GetFile_Processor_Configuration.png)
+<p align="center">
+   <img src="./assets/images/GetFile_Processor_Configuration.png" alt="GetFile_Processor_Configuration" height=400/>
+</p>
 
 5. Connect it to `PublishKafka_2_0` proccessor
 like this: 
-![GetFile_with_PublishKafka_2_0](./assets/images/GetFile_with_PublishKafka_2_0.png)
+
+<p align="center">
+   <img src="./assets/images/GetFile_with_PublishKafka_2_0.png" alt="GetFile_with_PublishKafka_2_0" height=350/>
+</p>
 
 6. Run the `kafka_consumer.py` script
 
@@ -126,30 +160,12 @@ like this:
 ![kafka_consumer_response](./assets/images/kafka_consumer_response.png)
 
 
-
-## Model Training
-
-
-1. Make sure that the Zipline service is running and exposed on port 8085. You can check this by verifying the container where Zipline is deployed.
-2. To open the Zipline web interface, enter the following URL in the browser's address bar :
-```bash
-http://localhost:8085/ 
-```
-3. Import the SentimentAnalysis notebook located in the `models` folder.
-4. Run the SentimentAnalysis notebook to explore the different steps we used for selecting the best classification model to use.
-5. We use MLflow for tracking our machine learning models, which helps us compare different versions and evaluate their performance. MLflow enables us to track experiments by recording metrics, parameters, and output files for each run.
-
-   To access the MLflow web UI and compare different metrics, use the following command:
-```bash
-mlflow ui -p 1234
-```
+## Data processing with sprak streaming
 
 
 
 
-
-
-
+## Airflow
 
 
 
@@ -184,12 +200,10 @@ streamlit run app.py --server.port 8502
 
 ## Video Demo
 
-Click [here](https://drive.google.com/file/d/13sxlESQgW1Z_gMACT10qyb2f2WIebrEa/view?usp=drive_link) to watch the video demo on Google Drive.
-
-
-
-
-
-
+<a href="https://drive.google.com/file/d/13sxlESQgW1Z_gMACT10qyb2f2WIebrEa/view?usp=drive_link" target="_blank">
+   <p align="center">
+      <img src="./assets/images/play_demo.gif" alt="thumbnail" style="border:1px solid gray" width="400" height="300">
+   </p>
+</a>
 
 
