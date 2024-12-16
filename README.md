@@ -188,8 +188,18 @@ spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5 --jars 
 This stream_consumer file uses the utils file which contains the different processing functions
 
 ## Airflow
+We used airflow to orchestrate the following part of our pipeline:
+![image](https://github.com/user-attachments/assets/d4a6ce07-02ba-4fe9-82e9-ad915e5c4105)
 
+First to access the airflow interface, head to http://localhost:8080/
 
+***username :***             airflow
+***password :***             airflow
+
+![image](https://github.com/user-attachments/assets/bffce5e4-cfc2-4a5f-9e37-6e05bd8e48c5)
+You will see a DAG named sentilytics_pipeline. Launch it, and it will execute every 10 seconds.
+![image](https://github.com/user-attachments/assets/660ae300-f705-4a5d-aa84-c8fc9c438afa)
+This data processing pipeline involves three main tasks. First, we check for the presence of documents in MongoDB. If documents are found, we fetch 100 of them and perform inference to generate predictions on the new data retrieved from YouTube and The New York Times. Finally, we remove these 100 documents from MongoDB.
 
 
 ## Real-time Visualization using Streamlit
