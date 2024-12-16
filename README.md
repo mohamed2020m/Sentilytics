@@ -212,7 +212,7 @@ You will see a DAG named sentilytics_pipeline. Launch it, and it will execute ev
 This data processing pipeline involves three main tasks. First, we check for the presence of documents in MongoDB. If documents are found, we fetch 100 of them and perform inference to generate predictions on the new data retrieved from YouTube and The New York Times. Finally, we remove these 100 documents from MongoDB.
 
 
-## Real-time Visualization using Streamlit
+## 📊 Real-time Visualization using Streamlit
 
 ### Pre-installation
 
@@ -230,7 +230,7 @@ PASSWORD=your_password
 DATABASE=Hive_database
 ```
 
-### 📊 Stream the complex visualization
+### Stream the complex visualization
 To perform streaming processing on the dashboard, you need to deploy all the settings mentioned above, as well as ensure that the entire pipeline is functioning correctly and all its components are in place.
 
 ### Run 
