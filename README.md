@@ -162,8 +162,30 @@ like this:
 
 ## Data processing with sprak streaming
 
+The steps :
+- Step 1: Raw data consumption from kafka from apache Nifi
+- Step 2: processing of this data (e.g., retrieving useful fields, filtering to keep only comments in English, etc.)
+- Step 3: After these processes, the data is stored in the mongoDB database.
 
-
+To start streaming jobs we will start by running apache spark :
+1.	Open a shell inside the spark container (assumes the containers are up and running) :
+```bash
+docker compose exec spark bash
+```
+2. Cd into the /app directory which has the volume pointing to the same directory as the root of the repository
+```bash
+cd /app
+```
+3. Packages to install
+```bash
+pip install -r requirements1.txt
+```
+### Retrieval of raw data from kafka and their processing
+As mentioned above we will consume raw data with various structures from kafka and these data will be transformed to be stored in the mongo database. To do this we will execute the following command:
+```bash
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5 --jars kafka-clients-2.2.0.jar --driver-class-path kafka-clients-2.2.0.jar stream_consumer.py
+```
+This stream_consumer file uses the utils file which contains the different processing functions
 
 ## Airflow
 
