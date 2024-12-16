@@ -232,15 +232,135 @@ services:
         condition: service_completed_successfully
 
   # namenode and datanode services
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop2.7.4-java8
+    environment:
+    - CLUSTER_NAME=test
+    env_file:
+    - ./hadoop.env
+    ports:
+    - "50070:50070"
+    volumes:
+    - namenode:/hadoop/dfs/name
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop2.7.4-java8
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070"
+    env_file:
+    - ./hadoop.env
+    ports:
+    - "50075:50075"
+    volumes:
+    - datanode:/hadoop/dfs/data
+
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop2.7.4-java8
+    container_name: resourcemanager
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075"
+    env_file:
+    - ./hadoop.env
+    ports:
+    - 8088:8088
+
+  nodemanager:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop2.7.4-java8
+    container_name: nodemanager
+    restart: always
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 resourcemanager:8088"
+    env_file:
+    - ./hadoop.env
+
+  historyserver:
+    image: bde2020/hadoop-historyserver:2.0.0-hadoop2.7.4-java8
+    container_name: historyserver
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 resourcemanager:8088"
+    env_file:
+    - ./hadoop.env
+    ports:
+    - 8188:8188
+    volumes:
+    - historyserver:/hadoop/yarn/timeline
+
+
 
   # hive
+  hive-server:
+    image: bde2020/hive:2.3.2-postgresql-metastore
+    env_file:
+      - ./hadoop.env
+    environment:
+      HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
+      SERVICE_PRECONDITION: "hive-metastore:9083"
+    ports:
+      - "10000:10000"
+
+  hive-metastore:
+    image: bde2020/hive:2.3.2-postgresql-metastore
+    command: /opt/hive/bin/hive --service metastore
+    env_file:
+      - ./hadoop.env
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432"
+    ports:
+      - "9083:9083"
+
+  hive-metastore-postgresql:
+    image: bde2020/hive-metastore-postgresql:2.3.0
+
+
 
   # spark
+  spark-master:
+    image: bitnami/spark:3.4.1
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+      - SPARK_ENABLE_HIVE_SUPPORT=true
+    ports:
+      - "8080:8080"
+      - "7077:7077"
 
+  spark-worker:
+    image: bitnami/spark:3.4.1
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=2
+      - SPARK_ENABLE_HIVE_SUPPORT=true
+    depends_on:
+      - spark-master
+    volumes:
+      - spark_vol:/spark
 
-  #
-
+  zeppelin:
+    image: apache/zeppelin:0.10.0
+    container_name: zeppelin
+    environment:
+      ZEPPELIN_ADDR: "0.0.0.0"
+      ZEPPELIN_PORT: 8085
+      SPARK_HOME: /opt/spark
+      SPARK_MASTER: spark://spark:7077
+      PYSPARK_PYTHON: python3
+      PYSPARK_DRIVER_PYTHON: python3
+    volumes:
+    - zeppelin_data:/zeppelin
+    - spark_vol:/opt/spark
+    ports:
+    - "8085:8085"
+    depends_on:
+    - spark-master
+    
   # zookeeper
+
   zookeeper:
     hostname: myzookeeper
     container_name: zookeeper_nifi
@@ -257,6 +377,27 @@ services:
       retries: 20
     networks:
       - sentiment_analysis_network
+
+
+  #
+
+  # 
+  # zookeeper:
+  #   hostname: myzookeeper
+  #   container_name: zookeeper_nifi
+  #   image: confluentinc/cp-zookeeper:7.4.0
+  #   ports:
+  #     - "2181:2181"
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+  #   healthcheck:
+  #     test: ["CMD", "echo", "ruok", "|", "nc", "localhost", "2181"]
+  #     interval: 20s
+  #     timeout: 20s
+  #     retries: 20
+  #   networks:
+  #     - sentiment_analysis_network
 
   # kafka
   kafka:
@@ -364,3 +505,8 @@ networks:
 
 volumes:
   postgres-db-volume:
+  spark_vol:
+  historyserver:
+  datanode:
+  namenode:
+  zeppelin_data:
