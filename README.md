@@ -207,3 +207,10 @@ streamlit run app.py --server.port 8502
 </a>
 
 
+## Apache Atlas
+
+To set up Atlas hooks in Apache NiFi, follow our detailed guide. Once you've completed the setup, navigate to the Apache Atlas interface, where you should see components displayed as follows:
+
+<p align="center">
+   <img src="./assets/images/nifi_flow_path.png" alt="nifi_flow_path" height=400/>
+</p>
