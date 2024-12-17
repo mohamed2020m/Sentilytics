@@ -13,7 +13,7 @@ from pyhive import hive
 def get_data_from_mongo(**kwargs):
     try:
         mongo_client = MongoClient('mongodb://root:root@mongo:27017')
-        mongo_db = mongo_client['comments_db']
+        mongo_db = mongo_client['sentilytics_db']
         mongo_collection = mongo_db['comments']
         data = list(mongo_collection.find().limit(100))
 
@@ -61,7 +61,7 @@ def save_to_hive(**kwargs):
         cursor = connection.cursor()
 
         create_table_query = """
-        CREATE TABLE IF NOT EXISTS comments_sentiment (
+        CREATE TABLE IF NOT EXISTS comments (
             source STRING,
             textOriginal STRING,
             likeCount INT,
