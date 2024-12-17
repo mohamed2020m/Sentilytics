@@ -20,3 +20,7 @@ copy_atlas_props_to_nifi:
 # Test nifi-kafka connection
 conf_test:
 	docker cp ./f914bab7-d46d-4c1d-b2c1-aa8c699958ef  nifi_container_persistent:/opt/nifi/test.json
+copy_atlas_props_to_hive:
+	docker cp ./tmp_atlas/atlas-application.properties lambda-sentiment-pipeline-hive-server-1:/opt/hive/conf
+copy_atlas_hive_hook:
+	docker cp ./libs/atlas lambda-sentiment-pipeline-hive-server-1:/opt/
